@@ -1,0 +1,28 @@
+const express = require('express');
+const router = express.Router();
+const db = require('./db');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+router.post('/', upload.single('media'), async (req, res) => {
+    const { diaryId, mediaType, thumbnailYn } = req.body;
+    const mediaPath = req.file.path; // 업로드된 파일 경로
+
+    if (!diaryId || !mediaType) {
+        return res.status(400).json({ message: '일기 ID와 미디어 종류를 입력해주세요.' });
+    }
+
+    try {
+        const result = await db.query(
+            'INSERT INTO media (diaryId, mediaPath, mediaType, thumbnailYn) VALUES (?, ?, ?, ?)',
+            [diaryId, mediaPath, mediaType, thumbnailYn]
+        );
+
+        res.status(201).json({ message: '미디어 업로드 성공!' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: '서버 오류' });
+    }
+});
+
+module.exports = router;
