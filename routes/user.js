@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const db = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -23,6 +23,7 @@ router.post('/signup', async (req, res) => {
 
         // 비밀번호 암호화
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(hashedPassword);
 
         // 회원 정보 저장
         const result = await db.query(

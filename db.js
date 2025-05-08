@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 //     host: 'localhost',
 //     user: 'root',
 //     password: 'test1234',
-//     database: 'sample1'
+//     database: 'sns_project_db'
 // });
 
 const pool = mysql.createPool({

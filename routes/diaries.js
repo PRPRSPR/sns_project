@@ -1,26 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
-const auth = require('./auth');
+const db = require('../db');
+const auth = require('../auth');
 
 // 일기 작성
-router.post('/', async (req, res) => {
-    const { email, date, memo, emotion_tag, editable_until, is_private } = req.body;
+router.post('/create', async (req, res) => {
+    const { email, date, memo, emotion_tag, is_private } = req.body;
 
-    if (!date || !memo) {
-        return res.status(400).json({ message: '날짜와 내용을 입력해주세요.' });
+    if (!email || !date || !emotion_tag || !memo) {
+        return res.status(400).json({ success: false, message: '필수 항목 누락' });
     }
 
     try {
-        const result = await db.query(
-            'INSERT INTO diaries (email, date, memo, emotion_tag, editable_until, is_private) VALUES (?, ?, ?, ?, ?, ?)',
-            [email, date, memo, emotion_tag, editable_until, is_private]
+        const [result] = await db.query(
+            'INSERT INTO diaries (email, date, memo, emotion_tag, is_private) VALUES (?, ?, ?, ?, ?)',
+            [email, date, memo, emotion_tag, is_private]
         );
 
-        res.status(201).json({ message: '일기 작성 성공!' });
+        res.status(201).json({ success: true, diaryId: result.insertId, message: '일기 작성 성공!' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: '서버 오류' });
+        res.status(500).json({ success: false, message: '서버 오류' });
     }
 });
 
@@ -30,7 +30,7 @@ router.get('/:email', auth, async (req, res) => {
 
     try {
         const [rows] = await db.query(`
-        SELECT d.id, d.memo, d.emotion_tag, m.mediaPath AS thumbnailPath
+        SELECT d.id, d.date, d.memo, d.emotion_tag, m.mediaPath AS thumbnailPath
         FROM diaries d
         LEFT JOIN media m ON d.id = m.diaryId AND m.thumbnailYn = 'Y'
         WHERE d.email = ? AND d.is_deleted = FALSE
