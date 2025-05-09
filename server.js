@@ -8,6 +8,7 @@ const userRouter = require('./routes/user')
 const diariesRouter = require('./routes/diaries')
 const commentsRouter = require('./routes/comments')
 const mediaRouter = require('./routes/media')
+const friendsRouter = require('./routes/friends')
 
 const app = express()
 app.use(express.json({ limit: '30mb' }));
@@ -22,6 +23,7 @@ app.use("/user", userRouter);
 app.use("/diary", diariesRouter);
 app.use("/comments", commentsRouter);
 app.use("/media", mediaRouter);
+app.use("/friends", friendsRouter);
 
 // const PORT = 3005;
 const PORT = process.env.PORT || 3005;

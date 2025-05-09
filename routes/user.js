@@ -3,9 +3,21 @@ const router = express.Router();
 const db = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const passport = require('./passport');
+const auth = require('../auth');
 
 // const JWT_SECRET = '12345678912345678912345678912345';
 const JWT_SECRET = process.env.JWT_SECRET;
+
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+
+router.get('/google/callback',
+    passport.authenticate('google', { session: false, failureRedirect: '/' }),
+    (req, res) => {
+        const token = req.user.token;
+        res.redirect(`http://localhost:3000/home?token=${token}`);
+    }
+);
 
 router.post('/signup', async (req, res) => {
     const { email, nickname, password } = req.body;
@@ -23,7 +35,6 @@ router.post('/signup', async (req, res) => {
 
         // 비밀번호 암호화
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword);
 
         // 회원 정보 저장
         const result = await db.query(
@@ -58,19 +69,35 @@ router.post('/login', async (req, res) => {
         }
 
         // JWT 생성
-        const token = jwt.sign(
-            {
-                email: user.email,
-                nickname: user.nickname,
-            },
-            JWT_SECRET,
-            { expiresIn: '1h' }
+        const token = jwt.sign({
+            email: user.email,
+            nickname: user.nickname,
+        }, JWT_SECRET, { expiresIn: '2h' }
         );
 
         res.json({ success: true, message: '로그인 성공', token });
 
     } catch (err) {
         console.error('로그인 에러:', err.message);
+        res.status(500).json({ success: false, message: '서버 오류' });
+    }
+});
+
+router.get('/:email', auth, async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const user = await db.query(
+            'SELECT email, nickname, profile_image, bio FROM users WHERE email = ?',
+            [email]
+        );
+        if (user[0].length === 0) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+
+        res.json({ success: true, user: user[0][0] });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ success: false, message: '서버 오류' });
     }
 });

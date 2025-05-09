@@ -30,14 +30,30 @@ router.get('/:email', auth, async (req, res) => {
 
     try {
         const [rows] = await db.query(`
-        SELECT d.id, d.date, d.memo, d.emotion_tag, m.mediaPath AS thumbnailPath
-        FROM diaries d
-        LEFT JOIN media m ON d.id = m.diaryId AND m.thumbnailYn = 'Y'
-        WHERE d.email = ? AND d.is_deleted = FALSE
-        ORDER BY d.date DESC
+            SELECT d.id, d.date, d.memo, d.emotion_tag, m.mediaPath AS thumbnailPath
+            FROM diaries d
+            LEFT JOIN media m ON d.id = m.diaryId AND m.thumbnailYn = 'Y'
+            WHERE d.email = ? AND d.is_deleted = FALSE
+            ORDER BY d.date DESC
       `, [email]);
 
         res.json({ success: true, list: rows });
+    } catch (err) {
+        res.status(500).json({ error: '조회 실패' });
+    }
+});
+
+router.get('/count/:email', async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const [rows] = await db.query(`
+            SELECT COUNT(*) AS count
+            FROM diaries d
+            WHERE d.email = ? AND d.is_deleted = FALSE
+      `, [email]);
+
+        res.json({ success: true, count: rows[0].count });
     } catch (err) {
         res.status(500).json({ error: '조회 실패' });
     }
@@ -49,9 +65,9 @@ router.get('/detail/:id', async (req, res) => {
     try {
         const [diaryResult] = await db.query(
             `SELECT d.*, m.mediaPath AS thumbnailPath
-         FROM diaries d
-         LEFT JOIN media m ON d.id = m.diaryId AND m.thumbnailYn = 'Y'
-         WHERE d.id = ?`,
+            FROM diaries d
+            LEFT JOIN media m ON d.id = m.diaryId AND m.thumbnailYn = 'Y'
+            WHERE d.id = ?`,
             [id]
         );
 
