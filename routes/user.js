@@ -83,6 +83,25 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/friends/:email', async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const user = await db.query(
+            'SELECT email, nickname, profile_image, bio FROM users WHERE email = ?',
+            [email]
+        );
+        if (user[0].length === 0) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+
+        res.json({ success: true, user: user[0][0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: '서버 오류' });
+    }
+});
+
 router.get('/:email', auth, async (req, res) => {
     const { email } = req.params;
 

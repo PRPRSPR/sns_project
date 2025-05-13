@@ -7,24 +7,24 @@ router.get('/recommend', async (req, res) => {
     const { email, limit } = req.query;
     try {
         const [rows] = await db.query(`
-            SELECT email, nickname, profile_image, bio 
+            SELECT u.email, u.nickname, u.profile_image, u.bio, 
                 CASE
-                    WHEN f1.status = 'pending' AND f1.user_email = ? THEN 'sent'
-                    WHEN f1.status = 'pending' AND f1.friend_email = ? THEN 'received'
-                    WHEN f1.status = 'accepted' THEN 'friend'
+                    WHEN f.status = 'pending' AND f.user_email = ? THEN 'sent'
+                    WHEN f.status = 'pending' AND f.friend_email = ? THEN 'received'
+                    WHEN f.status = 'accepted' THEN 'friend'
                     ELSE NULL
                 END AS status
-            FROM users
-            LEFT JOIN friends f1
-                ON (f1.user_email = ? AND f1.friend_email = u.email)
-                OR (f1.friend_email = ? AND f1.user_email = u.email)
-            WHERE email != ?
-            AND email NOT IN (
+            FROM users u
+            LEFT JOIN friends f
+                ON (f.user_email = ? AND f.friend_email = u.email)
+                OR (f.friend_email = ? AND f.user_email = u.email)
+            WHERE u.email != ?
+            AND u.email NOT IN (
                 SELECT friend_email FROM friends WHERE user_email = ?
             )
             ORDER BY RAND()
             LIMIT ?
-        `, [email, email, email, email, email, parseInt(limit)]);
+        `, [email, email, email, email, email, email, parseInt(limit)]);
         res.json({ success: true, recommend: rows });
     } catch (err) {
         console.error('유저 추천 실패:', err);
@@ -47,6 +47,38 @@ router.get('/count/:email', async (req, res) => {
     } catch (err) {
         console.error('친구 수 조회 실패:', err);
         res.status(500).json({ success: false, message: '친구 수 조회 실패' });
+    }
+});
+
+router.get('/status/:email', async (req, res) => {
+    const { email } = req.params;
+    try {
+        const [rows] = await db.query(
+            `SELECT 
+                u.email, u.nickname, u.profile_image,
+                CASE
+                    WHEN f.status = 'accepted' THEN 'friend'
+                    WHEN f.status = 'pending' AND f.user_email = ? THEN 'sent'
+                    WHEN f.status = 'pending' AND f.friend_email = ? THEN 'received'
+                    ELSE 'none'
+                END AS status
+            FROM users u
+            LEFT JOIN friends f 
+                ON (f.user_email = ? AND f.friend_email = u.email) 
+                OR (f.friend_email = ? AND f.user_email = u.email)
+            WHERE u.email IN (
+                SELECT friend_email FROM friends WHERE user_email = ?
+                UNION
+                SELECT user_email FROM friends WHERE friend_email = ?
+            )
+            AND u.email != ?
+            `, [email, email, email, email, email, email, email]
+        );
+
+        res.json({ success: true, status: rows });
+    } catch (err) {
+        console.error('친구 상태 확인 오류:', err);
+        res.status(500).json({ success: false });
     }
 });
 
@@ -205,14 +237,17 @@ router.get('/:email', async (req, res) => {
 
     try {
         const [rows] = await db.query(
-            `SELECT f.user_email, u.nickname, u.profile_image, u.bio
+            `SELECT u.email, f.user_email, u.nickname, u.profile_image, u.bio
             FROM friends f
-            JOIN users u ON f.friend_email = u.email
+            JOIN users u ON (
+                (f.user_email = ? AND f.friend_email = u.email) OR
+                (f.friend_email = ? AND f.user_email = u.email)
+            )
             WHERE f.user_email = ? and f.status = 'accepted'`,
-            [email]
+            [email, email, email]
         );
-
-        res.json({ success: true, friends: rows });
+        
+        res.json({ success: true, friends: rows});
     } catch (err) {
         console.error('친구 목록 조회 실패:', err);
         res.status(500).json({ success: false, message: '친구 목록 조회 실패' });
