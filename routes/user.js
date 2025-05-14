@@ -5,6 +5,19 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const passport = require('./passport');
 const auth = require('../auth');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/profile/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
 
 // const JWT_SECRET = '12345678912345678912345678912345';
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -119,6 +132,29 @@ router.get('/:email', auth, async (req, res) => {
         console.error(err);
         res.status(500).json({ success: false, message: '서버 오류' });
     }
+});
+
+router.put('/:email', auth, upload.single('profile_image'), async (req, res) => {
+  const { email } = req.params;
+  const { nickname, bio } = req.body;
+  const profileImage = req.file ? req.file.path : null;
+
+  try {
+    const [[existing]] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    await db.query(
+      `UPDATE users SET nickname = ?, bio = ?, ${profileImage ? 'profile_image = ?,' : ''} updated_at = NOW() WHERE email = ?`,
+      profileImage ? [nickname, bio, profileImage, email] : [nickname, bio, email]
+    );
+
+    res.json({ success: true, message: '프로필이 수정되었습니다.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: '서버 오류' });
+  }
 });
 
 module.exports = router;

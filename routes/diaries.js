@@ -74,14 +74,32 @@ router.get('/detail/:id', async (req, res) => {
         if (diaryResult.length === 0) {
             return res.json({ success: false, message: '일기 없음' });
         }
+
+        // 댓글 목록
         const [commentResult] = await db.query(
             `SELECT c.*, u.nickname 
              FROM comments c
              JOIN users u ON c.email = u.email
-             WHERE c.diary_id = ? AND c.is_deleted = false
+             WHERE c.diary_id = ?
              ORDER BY c.created_at ASC`,
             [id]
         );
+
+        const commentMap = {};
+        const roots = [];
+
+        commentResult.forEach(c => {
+            c.replies = [];
+            commentMap[c.id] = c;
+        });
+
+        commentResult.forEach(c => {
+            if (c.parent_comment_id) {
+                commentMap[c.parent_comment_id]?.replies.push(c);
+            } else {
+                roots.push(c);
+            }
+        });
 
         // 미디어 목록
         const [mediaResult] = await db.query(
@@ -92,9 +110,76 @@ router.get('/detail/:id', async (req, res) => {
         res.json({
             success: true,
             detail: diaryResult[0],
-            comments: commentResult,
+            comments: roots,
             media: mediaResult
         });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: '서버 오류' });
+    }
+});
+
+router.delete('/:id', auth, async (req, res) => {
+    const diaryId = req.params.id;
+    const userEmail = req.user.email;
+
+    try {
+        const [diaryCheck] = await db.query(
+            'SELECT * FROM diaries WHERE id = ? AND email = ?',
+            [diaryId, userEmail]
+        );
+
+        if (diaryCheck.length === 0) {
+            return res.status(403).json({ success: false, message: '삭제 권한이 없습니다.' });
+        }
+
+        await db.query('DELETE FROM diaries WHERE id = ?', [diaryId]);
+        await db.query('DELETE FROM media WHERE diaryId = ?', [diaryId]); // 관련 미디어도 삭제
+        await db.query('DELETE FROM comments WHERE diary_id = ?', [diaryId]); // 댓글 삭제
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: '서버 오류' });
+    }
+});
+
+router.put('/:id', auth, async (req, res) => {
+    const diaryId = req.params.id;
+    const { emotion_tag, memo } = req.body;
+    const userEmail = req.user.email;
+
+    try {
+        // 다이어리 정보 조회
+        const [rows] = await db.query('SELECT email, editable_until FROM diaries WHERE id = ?', [diaryId]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: '일기를 찾을 수 없습니다.' });
+        }
+
+        const diary = rows[0];
+        console.log(diary.email);
+
+        // 1. 작성자 확인
+        if (diary.email !== userEmail) {
+            return res.status(403).json({ success: false, message: '수정 권한이 없습니다.' });
+        }
+
+        // 2. editable_until 확인
+        const now = new Date();
+        const editableUntil = new Date(diary.editable_until);
+
+        if (now > editableUntil) {
+            return res.status(403).json({ success: false, message: '수정 가능한 시간이 지났습니다.' });
+        }
+
+        // 수정 실행
+        await db.query(
+            'UPDATE diaries SET emotion_tag = ?, memo = ?, updated_at = NOW() WHERE id = ?',
+            [emotion_tag, memo, diaryId]
+        );
+
+        res.json({ success: true, message: '일기가 수정되었습니다.' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: '서버 오류' });

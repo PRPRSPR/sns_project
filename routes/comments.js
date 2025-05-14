@@ -5,27 +5,15 @@ const db = require('../db');
 // 댓글 작성
 router.post('/:diaryId', async (req, res) => {
     const { diaryId } = req.params;
-    const { comment } = req.body;
-    const email = req.user.userEmail;
+    const { email, comment, parentId = null } = req.body;
 
     try {
-        const result = await db.query(
-            `INSERT INTO comments (email, diary_id, comment) VALUES (?, ?, ?)`,
-            [email, diaryId, comment]
+        await db.query(
+            `INSERT INTO comments (email, diary_id, comment, parent_comment_id) VALUES (?, ?, ?, ?)`,
+            [email, diaryId, comment, parentId]
         );
 
-        // 닉네임 포함해서 반환 (프론트 갱신용)
-        const [userInfo] = await db.query(`SELECT nickname FROM users WHERE email = ?`, [email]);
-
-        res.json({
-            success: true,
-            comment: {
-                id: result[0].insertId,
-                email,
-                comment,
-                nickname: userInfo[0].nickname
-            }
-        });
+        res.json({ success: true, message: '댓글 등록 완료' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: '댓글 저장 오류' });
