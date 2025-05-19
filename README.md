@@ -16,7 +16,7 @@
 
 <br/>
 
-## 🛠️ 사용 기술 (Tech Stack)
+## 🛠️ 사용 기술
 
 ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
@@ -28,7 +28,7 @@
 
 <br/>
 
-## ✨ 주요 기능 (Key Features)
+## ✨ 주요 기능
 
 - 🔐 회원가입 / 로그인 (jwt 사용, 일반, Google 로그인)
 - 📖 감정 기반 일기 작성, 조회, 수정, 삭제 (CRUD)
