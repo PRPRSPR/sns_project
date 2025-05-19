@@ -4,6 +4,14 @@
 > 사용자들이 자신의 일상을 감정과 함께 기록하고, 친구와 소통할 수 있는 감성 기반 SNS 웹사이트입니다.
 
 <br/>
+<br/>
+
+## ⏱️ 개발 기간
+
+#### 2025.05.07 ~ 2025.05.15
+
+<br/>
+<br/>
 
 ## 🖼️ 데모 화면
 
@@ -62,6 +70,7 @@
 
 
 <br/>
+<br/>
 
 ## 🛠️ 사용 기술
 
@@ -73,6 +82,7 @@
 ![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 
+<br/>
 <br/>
 
 ## ✨ 주요 기능
@@ -87,6 +97,7 @@
 - 🔔 알림 기능 (친구 요청 등)
 - 🧑‍💼 마이페이지 (프로필 조회 및 편집)
 
+<br/>
 <br/>
 
 ## 📝 프로젝트 후기
