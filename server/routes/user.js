@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('./passport');
 const auth = require('../auth');
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
