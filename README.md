@@ -33,7 +33,7 @@
 - 친구가 작성한 일기
 
   
-![일기 조회](https://github.com/PRPRSPR/sns_project_diary/blob/master/diary.JPG)
+![일기 조회](https://github.com/PRPRSPR/sns_project_diary/blob/master/diary2.JPG)
 
 
 
