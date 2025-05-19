@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `diaries` (
   PRIMARY KEY (`id`),
   KEY `email` (`email`),
   CONSTRAINT `diaries_ibfk_1` FOREIGN KEY (`email`) REFERENCES `users` (`email`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 테이블 데이터 sns_project_db.diaries:~13 rows (대략적) 내보내기
 INSERT INTO `diaries` (`id`, `email`, `date`, `memo`, `emotion_tag`, `editable_until`, `is_deleted`, `is_private`, `created_at`, `updated_at`) VALUES
@@ -84,7 +84,9 @@ INSERT INTO `diaries` (`id`, `email`, `date`, `memo`, `emotion_tag`, `editable_u
 	(41, 'test@test.com', '2025-05-14', 'ㄹㄹㄹㄹ? ㅇㅇ', 'excited', '2025-05-15 15:43:42', 0, 0, '2025-05-14 06:43:42', '2025-05-14 08:39:13'),
 	(42, 'test@test.com', '2025-05-07', '게시글 테스트 입니다.\n수정 테스트 입니다.', 'happy', '2025-05-16 13:15:03', 0, 0, '2025-05-15 04:15:03', '2025-05-15 04:15:19'),
 	(43, 'test@test.com', '2025-05-15', '해ㅐ냈다ㅏㅏㅏㅏㅏㅏㅏㅏ!!!!ㅏㅣㅏ이ㅏ;ㅣ암;ㅣㅏㅇㅁ;ㅏㅇ!!!', 'excited', '2025-05-16 18:55:38', 0, 0, '2025-05-15 09:55:38', '2025-05-15 09:55:38'),
-	(44, 'test@test.com', '2025-05-13', '집에 보내조', 'tired', '2025-05-16 20:17:11', 0, 0, '2025-05-15 11:17:11', '2025-05-15 11:17:11');
+	(44, 'test@test.com', '2025-05-13', '집에 보내조', 'tired', '2025-05-16 20:17:11', 0, 0, '2025-05-15 11:17:11', '2025-05-15 11:17:11'),
+	(46, 'test@test.com', '2025-05-10', '주말 일기ㅣㅣㅣ!!!!!!!!!!', 'excited', '2025-05-20 12:40:00', 0, 0, '2025-05-19 03:40:00', '2025-05-19 03:40:00'),
+	(47, 'aaaasss8979@naver.com', '2025-05-19', '왜 되던게 안되냐고', 'angry', '2025-05-20 18:49:41', 0, 0, '2025-05-19 09:49:41', '2025-05-19 09:49:41');
 
 -- 테이블 sns_project_db.friends 구조 내보내기
 CREATE TABLE IF NOT EXISTS `friends` (
@@ -94,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `friends` (
   `status` enum('pending','accepted','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'pending' COMMENT '요청/수락/거절(삭제)',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 테이블 데이터 sns_project_db.friends:~7 rows (대략적) 내보내기
 INSERT INTO `friends` (`id`, `user_email`, `friend_email`, `status`, `created_at`) VALUES
@@ -104,7 +106,11 @@ INSERT INTO `friends` (`id`, `user_email`, `friend_email`, `status`, `created_at
 	(28, 'test2@test.com', 'test5@test.com', 'pending', '2025-05-12 11:28:17'),
 	(29, 'test2@test.com', 'test4@test.com', 'pending', '2025-05-12 11:28:18'),
 	(30, 'test2@test.com', 'test@test.com', 'accepted', '2025-05-12 11:28:18'),
-	(31, 'test@test.com', 'test2@test.com', 'accepted', '2025-05-12 11:28:41');
+	(31, 'test@test.com', 'test2@test.com', 'accepted', '2025-05-12 11:28:41'),
+	(38, 'aaaasss8979@naver.com', 'test@test.com', 'accepted', '2025-05-19 09:50:20'),
+	(39, 'aaaasss8979@naver.com', 'test2@test.com', 'pending', '2025-05-19 09:50:24'),
+	(40, 'aaaasss8979@naver.com', 's.subin.0208@gmail.com', 'pending', '2025-05-19 09:50:30'),
+	(41, 'test@test.com', 'aaaasss8979@naver.com', 'accepted', '2025-05-19 10:54:57');
 
 -- 테이블 sns_project_db.media 구조 내보내기
 CREATE TABLE IF NOT EXISTS `media` (
@@ -118,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   PRIMARY KEY (`id`),
   KEY `diaryId` (`diaryId`),
   CONSTRAINT `media_ibfk_1` FOREIGN KEY (`diaryId`) REFERENCES `diaries` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 테이블 데이터 sns_project_db.media:~33 rows (대략적) 내보내기
 INSERT INTO `media` (`id`, `diaryId`, `mediaPath`, `mediaType`, `thumbnailYn`, `mediaOrder`, `createdAt`) VALUES
@@ -154,7 +160,14 @@ INSERT INTO `media` (`id`, `diaryId`, `mediaPath`, `mediaType`, `thumbnailYn`, `
 	(58, 43, 'uploads/1747302938260-clay-banks-jYeznJBMC80-unsplash.jpg', 'image', 'N', 3, '2025-05-15 18:55:38'),
 	(59, 43, 'uploads/1747302938271-250205 (2).jpg', 'image', 'Y', 4, '2025-05-15 18:55:38'),
 	(60, 43, 'uploads/1747302938280-250205 (3).jpg', 'image', 'N', 5, '2025-05-15 18:55:38'),
-	(61, 44, 'uploads/1747307831415-250207cjdthfah.jpg', 'image', 'Y', 0, '2025-05-15 20:17:11');
+	(61, 44, 'uploads/1747307831415-250207cjdthfah.jpg', 'image', 'Y', 0, '2025-05-15 20:17:11'),
+	(66, 46, 'uploads/1747626000791-profile.png', 'image', 'Y', 0, '2025-05-19 12:40:00'),
+	(67, 46, 'uploads/1747626000798-250207dhfhfk.jpg', 'image', 'N', 1, '2025-05-19 12:40:00'),
+	(68, 46, 'uploads/1747626000844-Beautiful Cat Profile Pic.jpg', 'image', 'N', 2, '2025-05-19 12:40:00'),
+	(69, 46, 'uploads/1747626000851-250206.PNG', 'image', 'N', 3, '2025-05-19 12:40:00'),
+	(70, 46, 'uploads/1747626000861-OIP.jpg', 'image', 'N', 4, '2025-05-19 12:40:00'),
+	(71, 47, 'uploads/1747648181191-alvaro-montoro-UwnrQ7ggOoY-unsplash.jpg', 'image', 'Y', 0, '2025-05-19 18:49:41'),
+	(72, 47, 'uploads/1747648181205-round-icons-WuwxlGdITgw-unsplash.jpg', 'image', 'N', 1, '2025-05-19 18:49:41');
 
 -- 테이블 sns_project_db.messages 구조 내보내기
 CREATE TABLE IF NOT EXISTS `messages` (
@@ -197,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   KEY `sender_email` (`sender_email`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_email`) REFERENCES `users` (`email`) ON DELETE CASCADE,
   CONSTRAINT `notifications_ibfk_2` FOREIGN KEY (`sender_email`) REFERENCES `users` (`email`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 테이블 데이터 sns_project_db.notifications:~17 rows (대략적) 내보내기
 INSERT INTO `notifications` (`id`, `user_email`, `sender_email`, `type`, `message`, `link`, `is_read`, `created_at`) VALUES
@@ -211,13 +224,15 @@ INSERT INTO `notifications` (`id`, `user_email`, `sender_email`, `type`, `messag
 	(21, 'test3@test.com', 'test2@test.com', 'friend_request', '이두나님이 친구 요청을 보냈습니다.', '/profile/test2@test.com', 0, '2025-05-12 11:28:15'),
 	(22, 'test5@test.com', 'test2@test.com', 'friend_request', '이두나님이 친구 요청을 보냈습니다.', '/profile/test2@test.com', 0, '2025-05-12 11:28:17'),
 	(23, 'test4@test.com', 'test2@test.com', 'friend_request', '이두나님이 친구 요청을 보냈습니다.', '/profile/test2@test.com', 0, '2025-05-12 11:28:18'),
-	(24, 'test@test.com', 'test2@test.com', 'friend_request', '이두나님이 친구 요청을 보냈습니다.', '/profile/test2@test.com', 0, '2025-05-12 11:28:18'),
+	(24, 'test@test.com', 'test2@test.com', 'friend_request', '이두나님이 친구 요청을 보냈습니다.', '/profile/test2@test.com', 1, '2025-05-12 11:28:18'),
 	(25, 'aaaasss8979yy@gmail.com', 'test@test.com', 'friend_request', '김하나님이 친구 요청을 보냈습니다.', '/profile/test@test.com', 0, '2025-05-13 01:50:43'),
 	(26, 's.subin.0208@gmail.com', 'test3@test.com', 'friend_request', '서세나님이 친구 요청을 보냈습니다.', '/profile/test3@test.com', 0, '2025-05-13 02:16:08'),
-	(27, 'test@test.com', 'test3@test.com', 'friend_request', '서세나님이 친구 요청을 보냈습니다.', '/profile/test3@test.com', 0, '2025-05-13 02:16:23'),
-	(28, 'test@test.com', 'test3@test.com', 'friend_request', '서세나님이 친구 요청을 보냈습니다.', '/profile/test3@test.com', 0, '2025-05-13 04:15:53'),
+	(28, 'test@test.com', 'test3@test.com', 'friend_request', '서세나님이 친구 요청을 보냈습니다.', '/profile/test3@test.com', 1, '2025-05-13 04:15:53'),
 	(29, 's.subin.0208@gmail.com', 'test@test.com', 'friend_request', '김하나님이 친구 요청을 보냈습니다.', '/profile/test@test.com', 0, '2025-05-13 07:25:59'),
-	(30, 's.subin.0208@gmail.com', 'test@test.com', 'friend_request', '김하나님이 친구 요청을 보냈습니다.', '/profile/test@test.com', 0, '2025-05-13 07:26:06');
+	(30, 's.subin.0208@gmail.com', 'test@test.com', 'friend_request', '김하나님이 친구 요청을 보냈습니다.', '/profile/test@test.com', 0, '2025-05-13 07:26:06'),
+	(31, 'test@test.com', 'aaaasss8979@naver.com', 'friend_request', '신파랑님이 친구 요청을 보냈습니다.', '/profile/aaaasss8979@naver.com', 1, '2025-05-19 09:50:20'),
+	(32, 'test2@test.com', 'aaaasss8979@naver.com', 'friend_request', '신파랑님이 친구 요청을 보냈습니다.', '/profile/aaaasss8979@naver.com', 0, '2025-05-19 09:50:24'),
+	(33, 's.subin.0208@gmail.com', 'aaaasss8979@naver.com', 'friend_request', '신파랑님이 친구 요청을 보냈습니다.', '/profile/aaaasss8979@naver.com', 0, '2025-05-19 09:50:30');
 
 -- 테이블 sns_project_db.reactions 구조 내보내기
 CREATE TABLE IF NOT EXISTS `reactions` (
@@ -256,6 +271,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- 테이블 데이터 sns_project_db.users:~10 rows (대략적) 내보내기
 INSERT INTO `users` (`email`, `password`, `nickname`, `profile_image`, `bio`, `created_at`, `updated_at`) VALUES
+	('aaaasss8979@naver.com', '$2b$10$.5jgnicIA87RZcLBeBWcm.TffY462NQ4GMm0P2tUb2YAiTR2qyRWK', '신파랑', NULL, NULL, '2025-05-19 09:38:13', '2025-05-19 09:45:17'),
 	('aaaasss8979yy@gmail.com', NULL, '신파랑', 'https://lh3.googleusercontent.com/a/ACg8ocKamleS33exZlFKdshUfefefmQBoLaiX3FQJQ9R90MaACMCFb_q=s96-c', NULL, '2025-05-09 09:16:36', '2025-05-09 09:16:36'),
 	('s.subin.0208@gmail.com', NULL, '신수빈', 'https://lh3.googleusercontent.com/a/ACg8ocKKRhiOuZK7W9iyIRz8GsqTPtzDMwbxzN1TQuB_xqBDPC3L8lX2=s96-c', NULL, '2025-05-09 02:33:09', '2025-05-09 02:33:09'),
 	('test@test.com', '$2b$10$Xxv7puuRHihTohfK/qLMCOhMjV4L/BHsXY6D7OUCr1ntzn9.OSrHy', '김하나', 'uploads\\profile\\1747191799406-250205 (3).jpg', '고양이 프사는 성공한다', '2025-05-08 01:08:42', '2025-05-14 03:03:19'),

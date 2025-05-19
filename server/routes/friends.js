@@ -151,6 +151,24 @@ router.post('/accept', async (req, res) => {
         // 역방향 추가
         await db.query(`INSERT INTO friends (user_email, friend_email, status) VALUES (?, ?, 'accepted')`, [userEmail, friendEmail]);
 
+        // userEmail 사용자의 닉네임 조회
+        const [userRows] = await db.query(
+            'SELECT nickname FROM users WHERE email = ?',
+            [userEmail]
+        );
+        const nickname = userRows[0]?.nickname || userEmail;
+
+        // 알림 메시지 생성
+        const message = `${nickname}님과 친구가 되었습니다.`;
+        const type = 'friend_accept';
+        const link = `/profile/${userEmail}`;
+
+        // 알림 테이블에 저장
+        await db.query(
+            `INSERT INTO notifications (user_email, sender_email, type, message, link) VALUES (?, ?, ?, ?, ?)`,
+            [friendEmail, userEmail, type, message, link]
+        );
+
         res.json({ success: true, message: '친구 요청이 수락되었습니다.' });
     } catch (err) {
         console.error('친구 요청 응답 실패:', err);
@@ -246,8 +264,8 @@ router.get('/:email', async (req, res) => {
             WHERE f.user_email = ? and f.status = 'accepted'`,
             [email, email, email]
         );
-        
-        res.json({ success: true, friends: rows});
+
+        res.json({ success: true, friends: rows });
     } catch (err) {
         console.error('친구 목록 조회 실패:', err);
         res.status(500).json({ success: false, message: '친구 목록 조회 실패' });

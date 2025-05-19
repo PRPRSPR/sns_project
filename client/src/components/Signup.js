@@ -108,8 +108,8 @@ const Signup = () => {
             });
     };
 
-    const debouncedCheckEmail = useMemo(
-        debounce((email) => {
+    const debouncedCheckEmail = useMemo(() => {
+        return debounce((email) => {
             fetch(`http://localhost:3005/user/check-email/${email}`)
                 .then((res) => res.json())
                 .then((data) => {
@@ -121,11 +121,12 @@ const Signup = () => {
                 .catch((err) => {
                     console.error("이메일 중복 확인 실패:", err);
                 });
-        }, 400),
-        [setValidationErrors]
-    );
+        }, 400);
+    }, [setValidationErrors]);
 
     useEffect(() => {
+        if (!debouncedCheckEmail?.cancel) return;
+
         return () => {
             debouncedCheckEmail.cancel();
         };
